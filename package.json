@@ -1,0 +1,27 @@
+{
+  "name": "ai-changelog-generator",
+  "version": "1.0.0",
+  "description": "Generate changelogs from git commits with optional AI categorization",
+  "main": "dist/index.js",
+  "bin": {
+    "changelog-gen": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": ["changelog", "git", "ai", "anthropic"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1",
+    "commander": "^12.0.0",
+    "simple-git": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
