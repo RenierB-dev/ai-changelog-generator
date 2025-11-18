@@ -1,0 +1,79 @@
+name: Auto Generate Changelog
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        description: 'Starting tag (leave empty for previous tag)'
+        required: false
+      to_tag:
+        description: 'Ending tag (leave empty for latest)'
+        required: false
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git operations
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          npm run build
+
+      - name: Generate Changelog
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          FROM_TAG="${{ github.event.inputs.from_tag }}"
+          TO_TAG="${{ github.event.inputs.to_tag }}"
+
+          if [ -z "$FROM_TAG" ]; then
+            # Get previous tag
+            FROM_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          fi
+
+          if [ -z "$TO_TAG" ]; then
+            # Use current tag or HEAD
+            TO_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "HEAD")
+          fi
+
+          # Generate changelog with AI if API key is available
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            npm start -- --ai --from "$FROM_TAG" --to "$TO_TAG" -o CHANGELOG.md
+          else
+            npm start -- --from "$FROM_TAG" --to "$TO_TAG" -o CHANGELOG.md
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'docs: Update CHANGELOG.md'
+          title: 'Update Changelog for ${{ github.event.release.tag_name }}'
+          body: |
+            Auto-generated changelog for release ${{ github.event.release.tag_name }}
+
+            This PR was automatically created by the Auto Changelog workflow.
+          branch: changelog-update-${{ github.run_number }}
+          delete-branch: true
+
+      - name: Post to Slack (if configured)
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          CHANGELOG=$(cat CHANGELOG.md)
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{\"text\":\"📝 New Changelog Generated\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*New Release: ${{ github.event.release.tag_name }}*\n\nChangelog has been updated. View the PR for details.\"}}]}"
