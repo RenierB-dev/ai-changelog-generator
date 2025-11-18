@@ -45,13 +45,15 @@ export class GitParser {
    */
   async getCommitsBetween(from?: string, to: string = 'HEAD'): Promise<Commit[]> {
     try {
-      // If no 'from' is specified, get all commits up to 'to'
-      const range = from ? `${from}..${to}` : to;
+      let log;
 
-      const log = await this.git.log({
-        from: from || undefined,
-        to: to,
-      });
+      if (from) {
+        // Get commits between two references
+        log = await this.git.log([`${from}..${to}`]);
+      } else {
+        // Get all commits up to 'to'
+        log = await this.git.log([to]);
+      }
 
       return log.all.map((commit: DefaultLogFields) => ({
         hash: commit.hash,
