@@ -1,0 +1,18 @@
+{
+  "Features": [
+    {
+      "hash": "6d8676b4a51a097b7973612691166a2d76f460f3",
+      "message": "feat: Implement AI changelog generator with optional AI",
+      "author": "Claude",
+      "date": "2025-11-18T19:02:37Z"
+    }
+  ],
+  "Other": [
+    {
+      "hash": "d0a6cb7c8799db74570cd6d1e67b36549effeb80",
+      "message": "Initial commit: Project setup",
+      "author": "RenierB_dev",
+      "date": "2025-11-18T19:36:22+02:00"
+    }
+  ]
+}
