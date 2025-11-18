@@ -1,0 +1,38 @@
+{
+  "name": "ai-changelog-generator",
+  "version": "1.0.0",
+  "description": "Smart changelog generator with rule-based core and optional AI enhancements",
+  "main": "dist/index.js",
+  "bin": {
+    "changelog": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "echo \"No tests yet\"",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "changelog",
+    "git",
+    "conventional-commits",
+    "ai",
+    "release-notes"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "simple-git": "^3.21.0",
+    "@anthropic-ai/sdk": "^0.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

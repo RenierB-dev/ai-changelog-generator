@@ -1,0 +1,11 @@
+src/
+tsconfig.json
+.git/
+.gitignore
+*.log
+node_modules/
+.env
+.DS_Store
+.prompts/
+.todos.md
+.context-handoff/
